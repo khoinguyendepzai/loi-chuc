@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1c0a1f">
+  <title>Một lời chúc dành cho bạn</title>
+  <!-- Phông chữ có hỗ trợ tiếng Việt. Không tải được (mạng yếu) thì tự dùng phông có sẵn của máy. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@1,500&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --nen-1: #1c0a1f;
+      --nen-2: #3b1238;
+      --hong: #ff4f8b;
+      --hong-nhat: #ffb3cf;
+      --chu: #fff3f8;
+      --chu-phu: #e9c3d4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--chu);
+      background: var(--nen-1);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---------- nền ---------- */
+    .nen {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(60vmax 60vmax at 50% 30%, rgba(255, 79, 139, .22), transparent 60%),
+        radial-gradient(50vmax 40vmax at 15% 90%, rgba(140, 60, 200, .18), transparent 70%),
+        linear-gradient(170deg, var(--nen-2), var(--nen-1) 70%);
+    }
+    .tim-bay {
+      position: fixed; bottom: -40px; z-index: 0;
+      color: var(--hong-nhat); pointer-events: none;
+      animation: bayLen linear forwards;
+    }
+    @keyframes bayLen {
+      0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+      10%  { opacity: var(--mo, .5); }
+      50%  { transform: translate(var(--lac, 20px), -55vh) rotate(15deg); }
+      100% { transform: translate(0, -115vh) rotate(-10deg); opacity: 0; }
+    }
+
+    /* ---------- bố cục ---------- */
+    .trang {
+      position: relative; z-index: 1;
+      min-height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+      text-align: center;
+    }
+    .nhan {
+      font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--hong-nhat); opacity: .9;
+      animation: hienDan 1s ease both;
+    }
+
+    /* ---------- trái tim đập ---------- */
+    .vung-tim {
+      position: relative;
+      width: min(62vw, 250px); aspect-ratio: 1;
+      margin: 22px auto 8px;
+      display: grid; place-items: center;
+      cursor: pointer; border: 0; background: none;
+      border-radius: 50%;
+    }
+    .vung-tim:focus-visible { outline: 3px solid var(--hong-nhat); outline-offset: 6px; }
+    .hao-quang {                       /* quầng sáng sau tim, sáng lên theo nhịp */
+      position: absolute; inset: 8%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 79, 139, .55), rgba(255, 79, 139, 0) 68%);
+      animation: haoQuang 1.2s ease-in-out infinite;
+    }
+    .vong {                            /* vòng sóng lan ra mỗi nhịp */
+      position: absolute; inset: 18%;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 150, 190, .7);
+      opacity: 0;
+      animation: vongLan 1.2s ease-out infinite;
+    }
+    .vong.v2 { animation-delay: .34s; }
+    .tim {
+      position: relative;
+      width: 72%;
+      filter: drop-shadow(0 10px 28px rgba(255, 40, 110, .55));
+      transform-origin: 50% 55%;
+      animation: dap 1.2s ease-in-out infinite;
+      will-change: transform;
+    }
+    /* nhịp "thình - thịch" giống tim thật */
+    @keyframes dap {
+      0%   { transform: scale(1); }
+      12%  { transform: scale(1.16); }
+      22%  { transform: scale(.98); }
+      34%  { transform: scale(1.11); }
+      50%  { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+    @keyframes haoQuang {
+      0%, 50%, 100% { transform: scale(.85); opacity: .55; }
+      12% { transform: scale(1.08); opacity: 1; }
+      34% { transform: scale(1.02); opacity: .85; }
+    }
+    @keyframes vongLan {
+      0%   { transform: scale(.75); opacity: 0; }
+      10%  { opacity: .75; }
+      70%  { transform: scale(1.55); opacity: 0; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    /* tim nhỏ bung ra khi chạm */
+    .bung {
+      position: absolute; left: 50%; top: 50%;
+      color: var(--hong-nhat); pointer-events: none;
+      animation: bungRa .9s ease-out forwards;
+    }
+    @keyframes bungRa {
+      0%   { transform: translate(-50%, -50%) scale(.4); opacity: 1; }
+      100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1); opacity: 0; }
+    }
+
+    /* ---------- chữ ---------- */
+    .tieu-de {
+      font-family: "Dancing Script", "Segoe Script", cursive;
+      font-weight: 700;
+      font-size: clamp(34px, 9.5vw, 48px);
+      line-height: 1.15;
+      background: linear-gradient(90deg, #ffd1e2, #ff7fae, #ffd1e2);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: hienDan 1s .2s ease both;
+    }
+    .the {
+      width: min(100%, 440px);
+      margin: 18px auto 0;
+      padding: 26px 22px 22px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 179, 207, .22);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      position: relative;
+      animation: hienDan 1s .35s ease both;
+    }
+    .the::before {                    /* dấu ngoặc kép trang trí */
+      content: "\201C";
+      position: absolute; top: -6px; left: 16px;
+      font-family: Georgia, serif; font-size: 64px; line-height: 1;
+      color: rgba(255, 127, 174, .55);
+    }
+    .loi-chuc {
+      min-height: 5.6em;
+      display: flex; align-items: center; justify-content: center;
+      font-family: "Lora", Georgia, serif; font-style: italic; font-weight: 500;
+      font-size: clamp(17px, 4.6vw, 20px);
+      line-height: 1.6;
+      color: #fff6fa;
+    }
+    .loi-chuc .tu {                   /* từng chữ hiện dần */
+      display: inline-block;
+      opacity: 0; transform: translateY(6px); filter: blur(3px);
+      animation: hienTu .5s ease forwards;
+    }
+    @keyframes hienTu { to { opacity: 1; transform: none; filter: none; } }
+    .ky-ten { margin-top: 14px; font-size: 13px; color: var(--chu-phu); }
+
+    .nut {
+      margin-top: 22px;
+      min-height: 50px; padding: 0 28px;
+      border: 0; border-radius: 999px;
+      font: 600 15px "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #ff6b9d, #e0306e);
+      box-shadow: 0 10px 26px rgba(224, 48, 110, .38);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+      animation: hienDan 1s .5s ease both;
+    }
+    .nut:active { transform: scale(.96); }
+    .nut:focus-visible { outline: 3px solid var(--hong-nhat); outline-offset: 4px; }
+    .goi-y { margin-top: 14px; font-size: 12px; color: var(--chu-phu); opacity: .8; }
+
+    @keyframes hienDan { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    /* Máy bật "giảm chuyển động": tim VẪN đập nhưng nhẹ hơn, bỏ hiệu ứng bay/bung/chữ chạy */
+    @media (prefers-reduced-motion: reduce) {
+      .tim { animation-name: dapNhe; animation-duration: 1.6s; }
+      .vong, .tim-bay, .bung { display: none; }
+      .loi-chuc .tu { animation: none; opacity: 1; transform: none; filter: none; }
+      .nhan, .tieu-de, .the, .nut { animation: none; }
+      @keyframes dapNhe { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.07); } 35% { transform: scale(1.04); } }
+    }
+  </style>
+</head>
+<body>
+  <div class="nen" aria-hidden="true"></div>
+
+  <main class="trang">
+    <div class="nhan">Một món quà nhỏ sau trò chơi</div>
+
+    <button class="vung-tim" id="tim" type="button" aria-label="Chạm vào trái tim để nhận lời chúc khác">
+      <span class="hao-quang" aria-hidden="true"></span>
+      <span class="vong" aria-hidden="true"></span>
+      <span class="vong v2" aria-hidden="true"></span>
+      <svg class="tim" viewBox="0 0 200 180" aria-hidden="true">
+        <defs>
+          <linearGradient id="mauTim" x1="0" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" stop-color="#ff9ec3"/>
+            <stop offset="45%" stop-color="#ff4f8b"/>
+            <stop offset="100%" stop-color="#c2124f"/>
+          </linearGradient>
+          <radialGradient id="bong" cx="0.3" cy="0.25" r="0.35">
+            <stop offset="0%" stop-color="#fff" stop-opacity=".75"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <path d="M100 170 C 72 146 10 108 10 58 C 10 22 38 6 62 6 C 80 6 93 16 100 30 C 107 16 120 6 138 6 C 162 6 190 22 190 58 C 190 108 128 146 100 170 Z"
+              fill="url(#mauTim)"/>
+        <path d="M100 170 C 72 146 10 108 10 58 C 10 22 38 6 62 6 C 80 6 93 16 100 30 C 107 16 120 6 138 6 C 162 6 190 22 190 58 C 190 108 128 146 100 170 Z"
+              fill="url(#bong)"/>
+      </svg>
+    </button>
+
+    <h1 class="tieu-de">Gửi bạn một lời chúc</h1>
+
+    <section class="the">
+      <p class="loi-chuc" id="loiChuc" aria-live="polite"></p>
+      <p class="ky-ten" id="kyTen"></p>
+    </section>
+
+    <button class="nut" id="nutKhac" type="button">Nhận lời chúc khác ♡</button>
+    <p class="goi-y">Chạm vào trái tim cũng được nhé</p>
+  </main>
+
+  <script>
+    // ====== SỬA NỘI DUNG Ở ĐÂY ======
+    const LOI_CHUC = [
+      "Chúc bạn luôn học tốt, tự tin và đạt được những kết quả thật đáng tự hào nhé!",
+      "Chúc bạn luôn giữ được sự tò mò, tinh thần ham học hỏi và dũng khí thử những điều mới mẻ.",
+      "Mong mỗi ngày đến trường của bạn đều có thêm niềm vui, tiếng cười và những người bạn tốt.",
+      "Dù có lúc bài vở hơi khó, hãy kiên trì từng chút một nhé. Bạn làm được nhiều hơn mình nghĩ đấy!",
+      "Chúc bạn có một tuổi học trò thật rực rỡ, nhiều kỷ niệm đẹp và luôn can đảm theo đuổi ước mơ."
+    ];
+    const KY_TEN = "— Thân mến, người tổ chức trò chơi ♡";
+    // =================================
+
+    const giamChuyenDong = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const oLoiChuc = document.getElementById("loiChuc");
+    document.getElementById("kyTen").textContent = KY_TEN;
+    let truoc = -1;
+
+    function soNgauNhien(n) {              // ngẫu nhiên 0..n-1 (dùng crypto nếu có)
+      if (window.crypto && crypto.getRandomValues) {
+        const a = new Uint32Array(1);
+        crypto.getRandomValues(a);
+        return a[0] % n;
+      }
+      return Math.floor(Math.random() * n);
+    }
+
+    function hienLoiChuc() {
+      let i;
+      do { i = soNgauNhien(LOI_CHUC.length); } while (LOI_CHUC.length > 1 && i === truoc);   // không trùng lần trước
+      truoc = i;
+      oLoiChuc.textContent = "";
+      const cau = document.createElement("span");
+      LOI_CHUC[i].split(" ").forEach((tu, k) => {        // mỗi chữ hiện lần lượt
+        const s = document.createElement("span");
+        s.className = "tu";
+        s.textContent = tu;
+        s.style.animationDelay = (k * 0.06) + "s";
+        cau.appendChild(s);
+        cau.appendChild(document.createTextNode(" "));
+      });
+      oLoiChuc.appendChild(cau);
+    }
+
+    function bungTim() {                   // tim nhỏ bung ra quanh trái tim
+      if (giamChuyenDong) return;
+      const vung = document.getElementById("tim");
+      for (let k = 0; k < 12; k++) {
+        const t = document.createElement("span");
+        t.className = "bung";
+        t.textContent = k % 3 ? "♥" : "♡";
+        const goc = (k / 12) * 2 * Math.PI + Math.random() * 0.4;
+        const r = 90 + Math.random() * 50;
+        t.style.setProperty("--dx", Math.cos(goc) * r + "px");
+        t.style.setProperty("--dy", Math.sin(goc) * r + "px");
+        t.style.fontSize = (12 + Math.random() * 12) + "px";
+        vung.appendChild(t);
+        t.addEventListener("animationend", () => t.remove());
+      }
+    }
+
+    function doiLoiChuc() {
+      hienLoiChuc();
+      bungTim();
+      if (navigator.vibrate) navigator.vibrate(30);      // rung nhẹ trên Android
+    }
+
+    function timBay() {                    // tim nhỏ bay lên ở nền
+      if (giamChuyenDong || document.hidden) return;
+      if (document.querySelectorAll(".tim-bay").length > 18) return;
+      const t = document.createElement("span");
+      t.className = "tim-bay";
+      t.textContent = Math.random() > .5 ? "♥" : "♡";
+      t.style.left = (Math.random() * 96) + "vw";
+      t.style.fontSize = (10 + Math.random() * 16) + "px";
+      t.style.setProperty("--lac", (Math.random() * 60 - 30) + "px");
+      t.style.setProperty("--mo", (0.25 + Math.random() * 0.45).toFixed(2));
+      t.style.animationDuration = (7 + Math.random() * 6) + "s";
+      document.body.appendChild(t);
+      t.addEventListener("animationend", () => t.remove());
+    }
+
+    document.getElementById("nutKhac").addEventListener("click", doiLoiChuc);
+    document.getElementById("tim").addEventListener("click", doiLoiChuc);
+    hienLoiChuc();
+    setInterval(timBay, 650);
+  </script>
+</body>
+</html>
