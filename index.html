@@ -87,7 +87,22 @@
       white-space: pre-line;
       animation: appear .7s ease both;
     }
-    .signature { color: #ff9fc2; font-size: 13px; margin: 0; }
+    .signature { color: #ff9fc2; font-size: 13px; margin: 0 0 24px; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 23px;
+      min-height: 48px;
+      background: #d94f83;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(217,79,131,.25);
+    }
+    button:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    button:focus-visible { outline: 3px solid #ffd2e4; outline-offset: 4px; }
+    .hint { color: #c99caf; font-size: 11px; margin: 18px 0 0; }
     .floating {
       position: absolute;
       bottom: -30px;
@@ -162,58 +177,65 @@
         <div class="message" id="message">Đang chọn một lời chúc dành cho bạn...</div>
       </div>
 
-      <p class="signature">— Thân mến, người tổ chức trò chơi ♡</p>
+      <p class="signature">— Gửi lớp Tin 11 - THPT Chuyên Thái Nguyên ♡</p>
+      <button id="change" type="button">Đổi lời chúc khác ♡</button>
+      <p class="hint" id="hint">Bạn chỉ được đổi lời chúc 1 lần thôi nhé.</p>
     </section>
   </main>
 
   <script>
-    // Danh sách 5 lời chúc. Bạn có thể sửa nội dung trong dấu ngoặc kép.
+    // Danh sách lời chúc. Bạn có thể sửa nội dung trong dấu ngoặc kép.
     const wishes = [
       "Chúc bạn luôn học tốt, tự tin và đạt được những kết quả thật đáng tự hào nhé!",
       "Chúc bạn luôn giữ được sự tò mò, tinh thần ham học hỏi và dũng khí thử những điều mới mẻ.",
       "Mong mỗi ngày đến trường của bạn đều có thêm niềm vui, tiếng cười và những người bạn tốt.",
       "Dù có lúc bài vở hơi khó, hãy kiên trì từng chút một nhé. Bạn làm được nhiều hơn mình nghĩ đấy!",
       "Chúc bạn có một tuổi học trò thật rực rỡ, nhiều kỷ niệm đẹp và luôn can đảm theo đuổi ước mơ.",
-      "Chúc bạn may mắn lần sau."
+      "Chúc bạn may mắn lần sau!"
     ];
 
-    // Câu chúc thêm, luôn hiện ở dòng cuối của mọi lời chúc.
-    const extraWish = "Muốn thấy được cầu vồng, các em cần phải chịu được cơn bão trước đó";
+    // Mỗi máy nhận 1 lời chúc và được đổi đúng 1 lần.
+    // Lời chúc và lượt đổi được lưu lại, nên quét lại mã QR
+    // hoặc tải lại trang vẫn hiện đúng lời chúc cũ.
+    const INDEX_KEY = "loi_chuc_qr_index";
+    const CHANGED_KEY = "loi_chuc_qr_da_doi";
 
-    // Mỗi máy chỉ nhận 1 lời chúc: lời chúc đầu tiên được lưu lại,
-    // quét lại mã QR hoặc tải lại trang vẫn hiện đúng lời chúc đó.
-    const STORAGE_KEY = "loi_chuc_qr_index";
+    const messageEl = document.getElementById("message");
+    const changeBtn = document.getElementById("change");
+    const hintEl = document.getElementById("hint");
 
-    function getWishIndex() {
-      try {
-        const saved = parseInt(localStorage.getItem(STORAGE_KEY), 10);
-        if (saved >= 0 && saved < wishes.length) {
-          return saved;
-        }
-      } catch (e) {}
+    function load(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
 
-      const index = Math.floor(Math.random() * wishes.length);
+    function save(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
 
-      try {
-        localStorage.setItem(STORAGE_KEY, String(index));
-      } catch (e) {}
-
+    // Chọn ngẫu nhiên 1 lời chúc, khác với lời chúc đang có (nếu có).
+    function randomIndex(exceptIndex) {
+      let index;
+      do {
+        index = Math.floor(Math.random() * wishes.length);
+      } while (wishes.length > 1 && index === exceptIndex);
       return index;
     }
 
-    function showWish() {
-      const index = getWishIndex();
-
-      const message = document.getElementById("message");
-      message.style.animation = "none";
-      void message.offsetWidth;
-      message.textContent = wishes[index] + "\n" + extraWish;
-      message.style.animation = "appear .7s ease both";
+    function showWish(index) {
+      messageEl.style.animation = "none";
+      void messageEl.offsetWidth;
+      messageEl.textContent = wishes[index];
+      messageEl.style.animation = "appear .7s ease both";
 
       // Tạo vài trái tim nhỏ bay lên khi hiện lời chúc.
       for (let i = 0; i < 4; i++) {
         createFloatingHeart();
       }
+    }
+
+    function lockChangeButton() {
+      changeBtn.hidden = true;
+      hintEl.textContent = "Bạn đã dùng lượt đổi lời chúc rồi nhé.";
     }
 
     function createFloatingHeart() {
@@ -228,8 +250,33 @@
       heart.addEventListener("animationend", () => heart.remove());
     }
 
-    // Hiện lời chúc ngay khi trang vừa mở.
-    showWish();
+    // Lấy lời chúc đã lưu, nếu chưa có thì chọn mới.
+    let currentIndex = parseInt(load(INDEX_KEY), 10);
+    if (!(currentIndex >= 0 && currentIndex < wishes.length)) {
+      currentIndex = randomIndex(-1);
+      save(INDEX_KEY, String(currentIndex));
+    }
+
+    showWish(currentIndex);
+
+    if (load(CHANGED_KEY) === "1") {
+      lockChangeButton();
+    }
+
+    // Nút đổi lời chúc: chỉ dùng được 1 lần.
+    changeBtn.addEventListener("click", () => {
+      if (load(CHANGED_KEY) === "1") {
+        lockChangeButton();
+        return;
+      }
+
+      currentIndex = randomIndex(currentIndex);
+      save(INDEX_KEY, String(currentIndex));
+      save(CHANGED_KEY, "1");
+
+      showWish(currentIndex);
+      lockChangeButton();
+    });
   </script>
 </body>
 </html>
